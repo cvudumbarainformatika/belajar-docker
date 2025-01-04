@@ -1,0 +1,77 @@
+
+services:
+
+  mysql:
+    container_name: "harry_db"
+    image: mariadb:lts
+    restart: unless-stopped
+    ports:
+      - 3355:3306
+    environment:
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 1
+      MARIADB_DATABASE: ${DB_DATABASE}
+    networks:
+      - db_network
+    volumes:
+      - ./docker/data/mysql:/var/lib/mysql
+
+
+  swoole:
+    build:
+      context: .
+      dockerfile: ./docker/php/php-swoole.dockerfile
+    user: ${UID}:${GID}
+    container_name: "harry_swoole"
+    restart: unless-stopped
+    # ini awal gk ada
+    depends_on:
+      - mysql
+    # ini juga
+    environment:
+      COMMAND: php artisan octane:start --host=0.0.0.0 --port=8000
+    ports:
+      - 8000:8000
+    volumes:
+      - ./:/var/www
+    networks:
+      - db_network
+      - webserver_network
+    # ini optional di awal gak ada
+    healthcheck:
+      test: curl -s http://localhost:8000/up >/dev/null || exit 1
+      interval: 5s
+      timeout: 10s
+      retries: 10
+
+  webserver:
+    image: nginx:1.26.0-alpine
+    container_name: "harry_webserver"
+    restart: unless-stopped
+    depends_on:
+      # ini pertama
+      # - swoole
+      # ini kedua
+      swoole:
+        condition: service_healthy
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+      - ./storage/logs/nginx/:/var/log/nginx/
+    ports:
+      - 8500:80
+    networks:
+      - webserver_network
+    healthcheck:
+      test: curl -s http://localhost:8500/up >/dev/null || exit 1
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    
+
+networks:
+  db_network:
+    driver: bridge
+    name: db_network  
+  webserver_network:
+    driver: bridge
+    name: webserver_network  

@@ -1,0 +1,22 @@
+# Untuk membuat docker dari awal pakai composer
+
+docker run --rm -v $(pwd):/app composer create-project laravel/laravel:^10.0 belajar-docker
+
+# buat docker-compose.yml
+# buat folder "docker" untuk menyimpan image
+
+1. nginx
+  - nginx.dockerfile
+  - default.conf
+
+# lalu coba docker x 
+
+docker-compose ps
+
+2. php
+  - php.dockerfile
+
+
+untuk ke php artisan
+
+docker compose exec swoole php artisan
