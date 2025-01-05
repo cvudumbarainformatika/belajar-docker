@@ -47,7 +47,7 @@ services:
   webserver:
     image: nginx:1.26.0-alpine
     container_name: "harry_webserver"
-    restart: unless-stopped
+    restart: always
     depends_on:
       # ini pertama
       # - swoole
