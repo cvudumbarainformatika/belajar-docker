@@ -28,7 +28,7 @@ services:
       - mysql
     # ini juga
     environment:
-      COMMAND: php artisan octane:start --host=0.0.0.0 --port=8000
+      COMMAND: php artisan octane:start --watch --host=0.0.0.0 --port=8000
       PROCESS: swoole
     ports:
       - 8000:8000
