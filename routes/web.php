@@ -15,12 +15,13 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
+    return 111;
     return view('welcome');
 });
 
 Route::get('/autogen', function () {
 
-    $data = User::all();
-    return response()->json($data);
-    // echo 'ok';
+    // $data = User::all();
+    // return response()->json($data);
+    echo 'ok11';
 });
