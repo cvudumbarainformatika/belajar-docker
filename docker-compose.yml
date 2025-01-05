@@ -15,6 +15,27 @@ services:
     volumes:
       - ./docker/data/mysql:/var/lib/mysql
 
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/php/php-fpm.dockerfile
+    user: ${UID}:${GID}
+    container_name: "harry_fpm"
+    working_dir: /var/www/
+    restart: unless-stopped
+    environment:
+      - COMPOSER_MEMORY_LIMIT=-1
+    links:
+      - mysql
+    depends_on:
+      - mysql
+    volumes:
+      - ./:/var/www
+    networks:
+      - db_network
+      - webserver_network
+    
+
 
   swoole:
     build:
@@ -50,23 +71,23 @@ services:
     restart: always
     depends_on:
       # ini pertama
-      # - swoole
+      - swoole
+      - app
       # ini kedua
-      swoole:
-        condition: service_healthy
+      # swoole:
+      #   condition: service_healthy
+      # app:
+      #   condition: service_healthy
     volumes:
       - ./:/var/www
       - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
       - ./storage/logs/nginx/:/var/log/nginx/
     ports:
       - 8500:80
+      - 8182:8182
     networks:
       - webserver_network
-    healthcheck:
-      test: curl -s http://localhost:8500/up >/dev/null || exit 1
-      interval: 5s
-      timeout: 10s
-      retries: 10
+    
     
 
 networks:
