@@ -35,6 +35,8 @@ RUN \
 RUN docker-php-ext-configure pcntl --enable-pcntl \
     && docker-php-ext-install pcntl
 
+# TODO not use node in producation
+RUN apk add --no-cache nodejs npm git
 
 COPY docker/php/supervisord/supervisord.conf /etc/
 
