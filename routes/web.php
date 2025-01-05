@@ -20,7 +20,7 @@ Route::get('/', function () {
 
 Route::get('/autogen', function () {
 
-    // $data = User::all();
-    // return response()->json($data);
-    echo 'ok';
+    $data = User::all();
+    return response()->json($data);
+    // echo 'ok';
 });
